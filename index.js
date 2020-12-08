@@ -8,7 +8,8 @@ wa.create().then(client => start(client))
 function start(client){
     client.onMessage(async message => {
         const { type, id, from, t, sender, isGroupMsg, chat, caption, isMedia, mimetype, quotedMsg, quotedMsgObj, mentionedJidList } = message
-        const groupAdmins = isGroupMsg ? await client.getGroupAdmins(chat.groupMetadata.id): "";
+        const groupId = isGroupMsg ? chat.groupMetadata.id : "";
+        const groupAdmins = isGroupMsg ? await client.getGroupAdmins(groupId): "";
         const isBotGroupAdmins = isGroupMsg ? groupAdmins.includes("919028833886" + '@c.us') : false
         const { name, formattedTitle } = chat
         let { body } = message
@@ -101,7 +102,7 @@ function start(client){
                 client.reply(from, 'Command sahi type karle bhai', id)
             }
         }
-        if(command === "grouplink"){
+        if(command === "#grouplink"){
             if(isBotGroupAdmins) return client.reply(from, "Mai admin nahi hun bhai!", id)
             if(isGroupMsg){
                 const inviteLink = await client.getGroupInviteLink(groupId);
@@ -110,6 +111,28 @@ function start(client){
             else{
                 client.reply(from, "Group me hi chalega")
             }
+        }
+        if(command === "#everyone"){
+             if(isGroupMsg){
+                const groupMembers = await client.getGroupMembers(groupId)
+                const dataText = body.slice(9)
+                if(dataText){
+
+            
+                let temp ='';
+                for (let index = 0; index < groupMembers.length; index++) {
+                    temp +='╠➥'
+                    temp+=`@${groupMembers[index].id.replace(/@c.us/g, '')}\n`
+                }
+                temp+=`\n ${dataText}`;
+                await client.sendTextWithMentions(from, temp);
+            }
+            else{
+                client.reply(from, "Arey kehna kya chahte ho bhai")
+            }
+             }else{
+                client.reply(from, "Group me hi chalega")
+             }
         }
         
     })
