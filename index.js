@@ -8,16 +8,20 @@ wa.create().then(client => start(client))
 function start(client){
     client.onMessage(async message => {
         const { type, id, from, t, sender, isGroupMsg, chat, caption, isMedia, mimetype, quotedMsg, quotedMsgObj, mentionedJidList } = message
+        const groupAdmins = isGroupMsg ? await client.getGroupAdmins(chat.groupMetadata.id): "";
+        const isBotGroupAdmins = isGroupMsg ? groupAdmins.includes("919028833886" + '@c.us') : false
+        const { name, formattedTitle } = chat
         let { body } = message
         const commands = caption || body || ''
         const command = commands.toLowerCase().split(' ')[0] || ''
+        
         //const args = command.split(' ')
         if(command === '#say'){
             // if(message.isGroupMsg){
                 const ttsEn = require('node-gtts')('en')
                 const dataText = body.slice(4)
                 //console.log ('dataText:', dataText);
-                if (dataText === '') return client.reply(from, 'Arey kehna kya chahte ho', id)
+                if (dataText === '') return client.reply(from, 'Arey kehna kya chahte ho bhai', id)
                 if (dataText.length > 200) return client.reply(from, 'Bot hun toh itna bada message translate karwayega?', id)
                 if(dataText.includes('bot') || dataText.includes('GT') || dataText.includes("GtXtreme") || dataText.includes("Gaurav") || dataText.includes("gaurav")){
                     ttsEn.save('./media/tts/resEn.mp3', "मेरे बारे में कुछ मत बोलो भाई", function () {
@@ -35,7 +39,7 @@ function start(client){
         }
         if(command === '#admins'){
             try {
-                const groupAdmins = isGroupMsg ? await client.getGroupAdmins(chat.groupMetadata.id): "";
+                
             //console.log("groupAdmins", groupAdmins);
             if (isGroupMsg) client.reply(from, 'These are your group admins', id)
             let temp = ''
@@ -61,6 +65,9 @@ function start(client){
                 const imageBase64 = `data:${quotedMsg.mimetype};base64,${mediaData.toString('base64')}`
                 client.reply(from, 'Bana diya sticker ab paisa lao!', id)
                 await client.sendImageAsSticker(from, imageBase64)
+            }
+            else{
+                client.reply(from, "Sahi command type karlo bhai")
             }
         }
 
@@ -92,6 +99,16 @@ function start(client){
             }
             else{
                 client.reply(from, 'Command sahi type karle bhai', id)
+            }
+        }
+        if(command === "grouplink"){
+            if(isBotGroupAdmins) return client.reply(from, "Mai admin nahi hun bhai!", id)
+            if(isGroupMsg){
+                const inviteLink = await client.getGroupInviteLink(groupId);
+                client.sendLinkWithAutoPreview(from,inviteLink,`\n Group Link for ${name}`)
+            }
+            else{
+                client.reply(from, "Group me hi chalega")
             }
         }
         
