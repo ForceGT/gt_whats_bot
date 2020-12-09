@@ -3,6 +3,7 @@ var request = require('request');
 const fs = require('fs-extra');
 const {exec} = require('child_process')
 const {menu} = require('./lib/utils');
+const { stat } = require('fs');
 const uaOverride = 'WhatsApp/2.2029.4 Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.116 Safari/537.36'
 wa.create().then(client => start(client))
 
@@ -12,7 +13,7 @@ function start(client){
         const groupId = isGroupMsg ? chat.groupMetadata.id : "";
         const groupAdmins = isGroupMsg ? await client.getGroupAdmins(groupId): "";
         const isGroupAdmins = isGroupMsg ? groupAdmins.includes(sender.id) : false
-        const isBotGroupAdmins = isGroupMsg ? groupAdmins.includes("919028833886" + '@c.us') : false
+        const isBotGroupAdmins = isGroupMsg ? groupAdmins.includes("919090542359" + '@c.us') : false
         const { name, formattedTitle } = chat
         let { body } = message
         const commands = caption || body || ''
@@ -43,6 +44,12 @@ function start(client){
             // }  
         }
         if(command === '#covid'){
+            const statecode = body.slice(7, 9)
+            const districtcode = body.slice(10)
+            if(!statecode || !districtcode) return client.reply(from, "Arey kehna kya chahte ho bhai!", id)
+            let temp = 'Here are your stats\n';
+            // console.log("statecode",statecode)
+            // console.log("districtcode",districtcode)
             request("https://api.covid19india.org/v2/state_district_wise.json",(error,response,body)=>{
             if(!error && response.statusCode == 200)
             {
@@ -50,45 +57,39 @@ function start(client){
                 res = JSON.parse(districtdata);
                 i = Number.parseInt(0);
                 j = Number.parseInt(0);
-                statecode = 'GJ';
-                districtcode = "Ahmedabad";
                 cont = true;
-                while(cont === true){
-                    arr = res[i];
-                    if(arr.statecode === statecode){
-                        distd = arr.districtData;
-                        // for(j = 0; j < 99; j++){
-                        //     if(distd[j])
-                        // }
-                        // console.log(distd[1].district);
-                        //Object.
-                        //console.log(Object.type(distd[1].district));
-                        //distd[1].district.type();
+                //console.log("Response:",res[i])
+                while(cont === true && i<37){
+                    // // arr = res[i];
+                    // console.log(`Response ${i}:${res[i]}`)
+                    //console.log(`${Object.values(res[i])} - ${res[i]["statecode"]}\n`)
+                    if(res[i]["statecode"] === statecode){
+                        distd = res[i]["districtData"];
                         while(true){
-                            if(distd[j].district == districtcode){
-                                console.log(j);
-                                // cdata = JSON.parse(distd[j]);
-                                // console.log(cdata);
-                                global.cont = false;
-                                global.rRecovered = distd[j].recovered;
-                                global.rActive = distd[j].active;
-                                global.rConfimed = distd[j].confirmed;
-                                global.rDeceased = distd[j].deceased;
-                                console.log(distd[j].recovered);
-                                console.log(distd[j].active);
-                                console.log(distd[j].confirmed);
-                                console.log(distd[j].deceased);
+                            if(distd[j]["district"] === districtcode){
+                                // console.log(j);
+                                // global.cont = false;
+                                // global.rRecovered = distd[j].recovered;
+                                // global.rActive = distd[j].active;
+                                // global.rConfimed = distd[j].confirmed;
+                                // global.rDeceased = distd[j].deceased;
+                                // console.log(distd[j].recovered);
+                                // console.log(distd[j].active);
+                                // console.log(distd[j].confirmed);
+                                // console.log(distd[j].deceased);
+                                temp+= `*Recovered*: ${distd[j].recovered}\n*Active*: ${distd[j].active}\n*Confirmed*: ${distd[j].confirmed}\n*Deceased* ${distd[j].deceased}`
+                                client.reply(from,temp,id)
                                 break;
                             }
                             j++;
                         }
-                        //console.log(arr.districtData[1].confirmed);
                         break;
                     }
                     i++
                 }
-                //console.log(res);
-                //console.log(Object.values(res));
+            }
+            else{
+                console.error(error)
             }
         })
         }
