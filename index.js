@@ -70,6 +70,10 @@ function start(client){
                                 // cdata = JSON.parse(distd[j]);
                                 // console.log(cdata);
                                 global.cont = false;
+                                global.rRecovered = distd[j].recovered;
+                                global.rActive = distd[j].active;
+                                global.rConfimed = distd[j].confirmed;
+                                global.rDeceased = distd[j].deceased;
                                 console.log(distd[j].recovered);
                                 console.log(distd[j].active);
                                 console.log(distd[j].confirmed);
