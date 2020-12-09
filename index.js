@@ -42,6 +42,52 @@ function start(client){
                
             // }  
         }
+        if(command === '#covid'){
+            request("https://api.covid19india.org/v2/state_district_wise.json",(error,response,body)=>{
+            if(!error && response.statusCode == 200)
+            {
+                districtdata = body;
+                res = JSON.parse(districtdata);
+                i = Number.parseInt(0);
+                j = Number.parseInt(0);
+                statecode = 'GJ';
+                districtcode = "Ahmedabad";
+                cont = true;
+                while(cont === true){
+                    arr = res[i];
+                    if(arr.statecode === statecode){
+                        distd = arr.districtData;
+                        // for(j = 0; j < 99; j++){
+                        //     if(distd[j])
+                        // }
+                        // console.log(distd[1].district);
+                        //Object.
+                        //console.log(Object.type(distd[1].district));
+                        //distd[1].district.type();
+                        while(true){
+                            if(distd[j].district == districtcode){
+                                console.log(j);
+                                // cdata = JSON.parse(distd[j]);
+                                // console.log(cdata);
+                                global.cont = false;
+                                console.log(distd[j].recovered);
+                                console.log(distd[j].active);
+                                console.log(distd[j].confirmed);
+                                console.log(distd[j].deceased);
+                                break;
+                            }
+                            j++;
+                        }
+                        //console.log(arr.districtData[1].confirmed);
+                        break;
+                    }
+                    i++
+                }
+                //console.log(res);
+                //console.log(Object.values(res));
+            }
+        })
+        }
         if(command === '#menu'){
             client.sendText(from,menu)
         }
@@ -141,7 +187,7 @@ function start(client){
                 request('https://complimentr.com/api', function (error, response, body) {
                 res = JSON.parse(response.body);
                 //console.log(res['compliment']);
-                client.reply(from, res['compliment']);
+                client.reply(from, res['compliment'], id);
             });
             } catch (error){
                 console.error(error);
