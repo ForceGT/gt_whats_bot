@@ -50,6 +50,8 @@ function start(client){
             //console.log("groupAdmins", groupAdmins);
             if (isGroupMsg) client.reply(from, 'These are your group admins', id)
             let temp = ''
+            const Owner_ = chat.groupMetadata.owner
+            temp+=`Owner of the group is: @${Owner_}\n`
             for (let admin of groupAdmins) {
                 //console.log("admin:", admin);
                 temp += `➸ @${admin.replace(/@c.us/g, '')}\n` 
@@ -144,9 +146,9 @@ function start(client){
                    if(dataText){
                    let temp ='';
                    for (let index = 0; index < groupMembers.length; index++) {
-                       temp+=`@${groupMembers[index].id.replace(/@c.us/g, '')}\n`
+                       temp+=`@${groupMembers[index].id.replace(/@c.us/g, '')}\t`
                    }
-                   temp+=`\n ${dataText}`;
+                   temp+=`\n${dataText}`;
                    await client.sendTextWithMentions(from, temp);
                     }
                     else{
@@ -160,6 +162,23 @@ function start(client){
                 console.error(error); 
             }
            
+        }
+
+        if(command === "#getkitty") {
+            try {
+                q1 = Math.floor(Math.random() * 900) + 300;
+                q2 = Math.floor(Math.random() * 900) + 300;
+                client.sendFileFromUrl(from, 'http://placekitten.com/'+q1+'/'+q2, `kitty.png_${q1}`,'Say Hi to Kitty!',id)
+            } catch (error) {
+                console.error(error)
+            }
+        }
+        if(command === "#abuse"){
+            client.reply(from, "WIP bruh!", id)
+        }
+        if(command === "#track"){
+            client.reply(from, "WIP bruh!",id)
+            // if(isGroupMsg) return client.reply(from, "Slide into DMs for this", id)
         }
         
     })
