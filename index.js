@@ -141,7 +141,7 @@ function start(client){
                 request('https://complimentr.com/api', function (error, response, body) {
                 res = JSON.parse(response.body);
                 //console.log(res['compliment']);
-                client.reply(from, res['complimnet']);
+                client.reply(from, res['compliment']);
             });
             } catch (error){
                 console.error(error);
@@ -170,10 +170,8 @@ function start(client){
                 }
             } catch (error) {
                 console.error(error); 
-            }
-           
+            }  
         }
-        if
         
     })
 }
