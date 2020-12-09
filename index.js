@@ -1,4 +1,5 @@
 const wa = require('@open-wa/wa-automate');
+var request = require('request');
 const fs = require('fs-extra');
 const {exec} = require('child_process')
 const {menu} = require('./lib/utils');
@@ -135,6 +136,17 @@ function start(client){
             }
             
         }
+        if(command === "#compliment"){
+            try{
+                request('https://complimentr.com/api', function (error, response, body) {
+                res = JSON.parse(response.body);
+                //console.log(res['compliment']);
+                client.reply(from, res['complimnet']);
+            });
+            } catch (error){
+                console.error(error);
+            }
+        }
         if(command === "#everyone"){
             try {
                 if(!isGroupAdmins) return client.reply(from, "Bot ki shakti ka galat istemaal?\n Only admins can do that", id)
@@ -161,6 +173,7 @@ function start(client){
             }
            
         }
+        if
         
     })
 }
