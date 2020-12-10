@@ -18,6 +18,8 @@ function start(client){
         let { body } = message
         const commands = caption || body || ''
         const command = commands.toLowerCase().split(' ')[0] || ''
+
+        //client.sendText(from, "Server Reboot!")
         
         //const args = command.split(' ')
         if(command === '#say'){
@@ -66,6 +68,7 @@ function start(client){
                     if(res[i]["statecode"] === statecode){
                         distd = res[i]["districtData"];
                         while(true){
+                            if(distd[j] === undefined) return client.reply(from, "Nahi Mila Bhai! Try Correcting state/district",id)
                             if(distd[j]["district"] === districtcode){
                                 // console.log(j);
                                 // global.cont = false;
@@ -133,6 +136,9 @@ function start(client){
                     client.reply(from, "Sahi command type karlo bhai")
                 }
             } catch (error) {
+                const filename = `./media/funnystickers/thakgayahun.png`
+                const stickerBase64 = await fs.readFileSync(filename, {encoding:"base64"})
+                await client.sendImageAsSticker(from,`data:image/png;base64,${stickerBase64}`)
                 console.error(error);
             } 
         }
@@ -141,36 +147,63 @@ function start(client){
 
             try {
                 if (isMedia) {
-                    if (mimetype === 'video/mp4' && message.duration < 10 || mimetype === 'image/gif' && message.duration < 10) {
+                    console.log("mimeType:",mimetype)
+                    if ((mimetype === 'video/mp4' && message.duration < 5) || (mimetype === 'image/gif' && message.duration < 5)) {
                         const mediaData = await wa.decryptMedia(message, uaOverride)
                         const filename = `./media/media.${mimetype.split('/')[1]}`
                         await fs.writeFileSync(filename, mediaData)
                         try{
-                            await exec(`gify ${filename} ./media/output.gif --fps=60 --scale=320:320`, async function (error, stdout, stderr) {
+                            await exec(`gify ${filename} ./media/output.gif --fps=15 --scale=350:350`, async function (error, stdout, stderr) {
                                 if(!error){
                                     const gif = await fs.readFileSync('./media/output.gif', { encoding: "base64" })
                                     await client.sendImageAsSticker(from, `data:image/gif;base64,${gif.toString('base64')}`)
                                     client.reply(from, 'Woosh! Your animated sticker is here!', id)
                                 }
                                 else {
-                                    console.error(error)
+                                    const filename = `./media/funnystickers/thakgayahun.png`
+                                    const stickerBase64 = await fs.readFileSync(filename, {encoding:"base64"})
+                                    await client.sendImageAsSticker(from,`data:image/png;base64,${stickerBase64.toString('base64')}`)
+                                    //console.error(error)
+                                    
                                 }
                                 
                             })
                         }catch (err){
-                            console.error(err)
+                            const filename = `./media/funnystickers/thakgayahun.png`
+                            const stickerBase64 = await fs.readFileSync(filename, {encoding:"base64"})
+                            await client.sendImageAsSticker(from,`data:image/png;base64,${stickerBase64.toString('base64')}`)
+                            //console.error(err)
+                            
                         }
                         
-                    } else (
-                        client.reply(from, '10 sec se kam de bhai!Bohot load hai', id)
-                    )
+                    } 
+                    // else if (mimetype === 'video/mp4'){
+                    //     const filename = `./media/funnystickers/thakgayahun.png`
+                    //     const stickerBase64 = await fs.readFileSync(filename, {encoding:"base64"})
+                    //     await client.sendImageAsSticker(from,`data:image/png;base64,${stickerBase64.toString('base64')}`)
+                    // }
+                    else {
+                        //client.reply(from, '10 sec se kam de bhai!\nBohot load hai!', id)
+                        const filename = `./media/funnystickers/thakgayahun.png`
+                        const stickerBase64 = await fs.readFileSync(filename, {encoding:"base64"})
+                        await client.sendImageAsSticker(from,`data:image/png;base64,${stickerBase64.toString('base64')}`)
+                    }
+                        
+                        
+                        
+                    
                 }
-                else{
+                else{ 
                     client.reply(from, 'Command sahi type karle bhai', id)
                 } 
             } catch (error) {
-                console.error(error);
+                const filename = `./media/funnystickers/thakgayahun.png`
+                const stickerBase64 = await fs.readFileSync(filename, {encoding:"base64"})
+                await client.sendImageAsSticker(from,`data:image/png;base64,${stickerBase64.toString('base64')}`)
+                //console.error(error);
+                
             }
+            
             
         }
         if(command === "#grouplink"){
@@ -191,10 +224,13 @@ function start(client){
         }
         if(command === "#compliment"){
             try{
+                let temp = "";
                 request('https://complimentr.com/api', function (error, response, body) {
                 res = JSON.parse(response.body);
                 //console.log(res['compliment']);
-                client.reply(from, res['compliment'], id);
+                // client.reply(from, res['compliment'], id);
+                temp+=`@${sender.id.replace(/@c.us/g, '')}\n${res['compliment']}`
+                client.sendTextWithMentions(from,temp)
             });
             } catch (error){
                 console.error(error);
@@ -202,7 +238,7 @@ function start(client){
         }
         if(command === "#everyone"){
             try {
-                if(!isGroupAdmins) return client.reply(from, "Bot ki shakti ka galat istemaal?\n Only admins can do that", id)
+                if(!isGroupAdmins) return client.reply(from, "Bot ki shakti ka galat istemaal?\nOnly admins can do that!", id)
                 if(isGroupMsg){
                    const groupMembers = await client.getGroupMembers(groupId)
                    const dataText = body.slice(9)
@@ -219,7 +255,7 @@ function start(client){
                     }
                 }
                 else{
-                   client.reply(from, "Group me hi chalega")
+                   client.reply(from, "Group me hi chalega",id)
                 }
             } catch (error) {
                 console.error(error); 
@@ -236,11 +272,50 @@ function start(client){
             }
         }
         if(command === "#abuse"){
-            client.reply(from, "WIP bruh!", id)
+        
+            try {
+                let dataText = body.split(" ")[1]
+                if(isGroupMsg){
+                    if(dataText === "@919090542359"){
+                        ttsEn.save('./media/tts/resEn.mp3', "मेरे बारे में कुछ मत बोलो भाई", function () {
+                            return client.sendPtt(from, './media/tts/resEn.mp3', id)
+                        })
+                    }
+                    const pathList = ["hindustani_nikal_lavde.mp3","ae_ji_gaali_de_raha.mp3","dadda_addha.mp3","roti_chawal.mp3","rowdy_abuse.mp3","chal_bsdk.mp3","pramod_dubey_maa_chod.mp3","teri_ma_ki.mp3","hatt_teri.mp3","tori_ma.mp3","chut_faad.mp3"]
+                    let selectedAudio = pathList[Math.floor(Math.random() * pathList.length)]
+                    const groupMembers = await client.getGroupMembers(groupId)
+                    groupMembers.filter(function(item){
+                        // Remove the bot number 
+                        return item.id !== "919090542359@c.us"
+                    })
+                    let selectedMember = groupMembers[Math.floor(Math.random() * groupMembers.length)]
+                    
+                    const audioId = client.sendFile(from,`./media/abuseAudios/${selectedAudio}`,"gaali.mp3","Yeh lo gaali khao!",waitForId=true)
+                    audioId.then((audioIdval)=>{
+                        // console.log("audioIdval", audioIdval)
+                        // console.log("selectedMember", selectedMember.id.replace(/@c.us/g, ''))
+                        // const countryCode = `${selectedMember.id.replace(/@c.us/g, '').slice(0,3)}`
+                        // const number = `${selectedMember.id.replace(/@c.us/g, '').slice(4, selectedMember.id.length)}`
+                        // client.reply(from, `@+${countryCode}${number}`,audioIdval)
+                        // console.log(dataText)
+                        if(!dataText || !dataText.includes("@")) return client.sendTextWithMentions(from, `@${selectedMember.id.replace(/@c.us/g, '')} Yeh lo gaali khao!`)
+                        client.sendTextWithMentions(from,`${dataText} Yeh lo gaali khao!`)
+                    })
+                    // console.log("audioId", audioId)
+                }else{
+                    client.reply(from, "Group me hi chalega",id)
+                }
+            } catch (error) {
+                console.log(selectedAudio)
+                console.error(error)
+            }
         }
         if(command === "#track"){
             client.reply(from, "WIP bruh!",id)
             // if(isGroupMsg) return client.reply(from, "Slide into DMs for this", id)
+        }
+        if(command === "#complement"){
+            client.reply(from, "Oh Maths ke fan #compliment aata hai mujhe!",id)
         }
         
     })
