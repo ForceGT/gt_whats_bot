@@ -15,6 +15,7 @@ function start(client){
         const groupAdmins = isGroupMsg ? await client.getGroupAdmins(groupId): "";
         const isGroupAdmins = isGroupMsg ? groupAdmins.includes(sender.id) : false
         const botNumber = ""; // Specify your botNumber here
+        const botOwner = ""; //Specify bot owner number here
         const isBotGroupAdmins = isGroupMsg ? groupAdmins.includes(botNumber) : false
         const { name, formattedTitle } = chat
         let { body } = message
