@@ -4,6 +4,7 @@ const fs = require('fs-extra');
 const {exec} = require('child_process')
 const {menu} = require('./lib/utils');
 const { stat } = require('fs');
+var flirts = require('./flirts');
 const uaOverride = 'WhatsApp/2.2029.4 Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.116 Safari/537.36'
 wa.create().then(client => start(client))
 
@@ -86,6 +87,15 @@ function start(client){
         }
         if(command === '#menu'){
             client.sendText(from,menu)
+        }
+        if(command === '#flirt'){
+            var possible =  flirts.phrases[Math.floor(Math.random()*flirts.phrases.length)];
+
+            while (possible.length >  119){
+                
+                possible =  flirts.phrases[Math.floor(Math.random()*flirts.phrases.length)];
+            }
+            client.reply(from,possible,id);
         }
         if(command === '#admins'){
             try {
