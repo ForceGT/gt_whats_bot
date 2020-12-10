@@ -1,6 +1,8 @@
 # GTXtreme Bot
 A Whatsapp Bot just made for prank purposes
 
+**Not being maintained anymore**
+
 ## Description
  This is not one of those usual ones made with selenium in headless mode but uses the much more powerful [open-wa](https://github.com/open-wa/wa-automate-nodejs) library
  
@@ -31,7 +33,11 @@ session.data.json``` will be generated which is the token
 node index.js
 ```
 
+
 ## More Info
 
 For any more modifications and detailed knowledge
 Head over to [Open WA Docs](https://docs.openwa.dev/)
+
+
+Feel free to fork and file a PR for changes
